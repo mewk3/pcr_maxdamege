@@ -17,24 +17,45 @@ score_rank = {'A1':1,'A2':1,'A3':1.1,'A4':1.1,'A5':1.2,
               'C1':2.2,'C2':2.2,'C3':2.5,'C4':2.5,'C5':3
               }
 
-df_m = pd.read_excel('./猫猫连接box收集表.xlsx')
-df_m1 = df_m.iloc[3:]
-df_char = df_m1.iloc[:,7:]     
-res_char = pd.DataFrame()
-for i in range(int(df_char.shape[1]/3)):
-    df_char1 = df_char.iloc[:,i*3:i*3+3]
-    df_char1['char'] = df_char1.columns[0]
-    df_char1 = pd.concat([df_m1.iloc[:,:2],df_char1],axis=1)
-    df_char1.columns = ['player','time','star','rank','zhuan','char']
-    res_char = pd.concat([res_char,df_char1])
-res_char_drop = res_char.dropna(subset=['star'])
-res_char_drop = res_char_drop[res_char_drop['star']!='无']
-res_char_player = res_char_drop[res_char_drop['player']=='全网在逃']
+#df_m = pd.read_excel('./猫猫连接box收集表.xlsx')
+#df_m1 = df_m.iloc[3:]
+#df_char = df_m1.iloc[:,7:]     
+#res_char = pd.DataFrame()
+#for i in range(int(df_char.shape[1]/3)):
+#    df_char1 = df_char.iloc[:,i*3:i*3+3]
+#    df_char1['char'] = df_char1.columns[0]
+#    df_char1 = pd.concat([df_m1.iloc[:,:2],df_char1],axis=1)
+#    df_char1.columns = ['player','time','star','rank','zhuan','char']
+#    res_char = pd.concat([res_char,df_char1])
+#res_char_drop = res_char.dropna(subset=['star'])
+#res_char_drop = res_char_drop[res_char_drop['star']!='无']
+#res_char_player = res_char_drop[res_char_drop['player']=='全网在逃']
+#
+#player_pool = res_char_player['char'].unique().tolist()  
 
-player_pool = res_char_player['char'].unique().tolist()  
+df_player = pd.read_excel('角色表.xlsx')
+player_pool = df_player['wkb'].dropna().values.tolist()
+#df = pd.read_excel('rk.xlsx')
+df = pd.read_excel('作业表.xlsx')
+test = pd.read_excel('./角色匹配表.xlsx')
 
+def scan_team(str1):
+#str1 = '真琴克总狗环忍'
+#test = test.set_index('after')
+    res =[]
+    for j in range(1,test.shape[1]):
+        for i in range(test.shape[0]):    
+            bf_str =  str(test[test.columns[j]].values[i])
+            af_str =  str(test['after'].values[i])
+            if bf_str==bf_str and  bf_str in str1:
+                str1 = str1.replace(bf_str,'')
+                res.append(af_str)
+    return res
 
-df = pd.read_excel('rk.xlsx')
+df['team_l'] = df['team'].map(scan_team)
+df2 = df['team_l'].apply(pd.Series)
+df2.columns = ['p1','p2','p3','p4','p5']
+df = pd.concat([df,df2],axis=1)
 
 df['score_rank'] = df['boss'].replace(score_rank)
 df['score'] = df['dmg']*df['score_rank']
@@ -73,18 +94,17 @@ for i in range(0,len(df.index)):
 res_df = res_df.sort_values(by=['总分','总伤'],ascending=False)
 
 
-import pandas as pd
-test = pd.read_excel('./角色匹配表.xlsx')
-
-str1 = '真琴克总狗环忍'
-#test = test.set_index('after')
-res =[]
-for j in range(1,test.shape[1]):
-    for i in range(test.shape[0]):    
-        bf_str =  str(test[test.columns[j]].values[i])
-        af_str =  str(test['after'].values[i])
-        print(bf_str,af_str)
-        if bf_str==bf_str and  bf_str in str1:
-            print(1)
-            str1 = str1.replace(bf_str,'')
-            res.append(af_str)
+#import pandas as pd
+#test = pd.read_excel('./角色匹配表.xlsx')
+#
+#str1 = '真琴克总狗环忍'
+##test = test.set_index('after')
+#res =[]
+#for j in range(1,test.shape[1]):
+#    for i in range(test.shape[0]):    
+#        bf_str =  str(test[test.columns[j]].values[i])
+#        af_str =  str(test['after'].values[i])
+#        print(bf_str,af_str)
+#        if bf_str==bf_str and  bf_str in str1:
+#            str1 = str1.replace(bf_str,'')
+#            res.append(af_str)
