@@ -36,7 +36,7 @@ score_rank = {'A1':1,'A2':1,'A3':1.1,'A4':1.1,'A5':1.2,
 df_player = pd.read_excel('角色表.xlsx')
 player_pool = df_player['wkb'].dropna().values.tolist()
 #df = pd.read_excel('rk.xlsx')
-df = pd.read_excel('作业表.xlsx')
+df = pd.read_excel('作业表.xlsx',sheet_name='Sheet3')
 test = pd.read_excel('./角色匹配表.xlsx')
 
 def scan_team(str1):
@@ -51,11 +51,11 @@ def scan_team(str1):
                 str1 = str1.replace(bf_str,'')
                 res.append(af_str)
     return res
-
-df['team_l'] = df['team'].map(scan_team)
-df2 = df['team_l'].apply(pd.Series)
-df2.columns = ['p1','p2','p3','p4','p5']
-df = pd.concat([df,df2],axis=1)
+if 'team' in df.columns: 
+    df['team_l'] = df['team'].map(scan_team)
+    df2 = df['team_l'].apply(pd.Series)
+    df2.columns = ['p1','p2','p3','p4','p5']
+    df = pd.concat([df,df2],axis=1)
 
 df['score_rank'] = df['boss'].replace(score_rank)
 df['score'] = df['dmg']*df['score_rank']
@@ -75,9 +75,9 @@ for i in range(0,len(df.index)):
             t13 = pd.Series(np.concatenate([team1,team3])).value_counts()
             t23 = pd.Series(np.concatenate([team2,team3])).value_counts()
             need_character = t12[t12>=2].index.tolist()+t13[t13>=2].index.tolist()+t23[t23>=2].index.tolist()
-            if [x for x in need_character if x not in player_pool]:
+            if [x for x in set(need_character) if x not in player_pool]:
                 continue
-            if len(t12[t12>=2])<2 and len(t13[t13>=2])<2 and len(t23[t23>=2])<2:
+            elif len(t12[t12>=2])<2 and len(t13[t13>=2])<2 and len(t23[t23>=2])<2:
                 res = {}
                 res['刀1'] = df.loc[i,'boss'] +':'+','.join(team1.tolist())+':'+str(df.loc[i,'dmg'])
                 res['刀2'] = df.loc[j,'boss'] +':'+','.join(team2.tolist())+':'+str(df.loc[j,'dmg'])
