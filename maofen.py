@@ -33,11 +33,11 @@ score_rank = {'A1':1,'A2':1,'A3':1.1,'A4':1.1,'A5':1.2,
 #
 #player_pool = res_char_player['char'].unique().tolist()  
 
-df_player = pd.read_excel('角色表.xlsx')
-player_pool = df_player['wkb'].dropna().values.tolist()
+df_player = pd.read_excel('box.xlsx')
+player_pool = df_player['wkq'].dropna().astype(str).values.tolist()
 #df = pd.read_excel('rk.xlsx')
-df = pd.read_excel('作业表.xlsx',sheet_name='Sheet3')
-test = pd.read_excel('./角色匹配表.xlsx')
+df = pd.read_excel('homework.xlsx',sheet_name='Sheet3')
+test = pd.read_excel('./name_mapping.xlsx')
 
 def scan_team(str1):
 #str1 = '真琴克总狗环忍'
@@ -74,8 +74,9 @@ for i in range(0,len(df.index)):
             t12 = pd.Series(np.concatenate([team1,team2])).value_counts()
             t13 = pd.Series(np.concatenate([team1,team3])).value_counts()
             t23 = pd.Series(np.concatenate([team2,team3])).value_counts()
-            need_character = t12[t12>=2].index.tolist()+t13[t13>=2].index.tolist()+t23[t23>=2].index.tolist()
-            if [x for x in set(need_character) if x not in player_pool]:
+#            need_character = t12[t12>=2].index.tolist()+t13[t13>=2].index.tolist()+t23[t23>=2].index.tolist()
+            need_character = set(t12.index.tolist()+t13.index.tolist()+t23.index.tolist())
+            if [x for x in need_character if x not in player_pool]:
                 continue
             elif len(t12[t12>=2])<2 and len(t13[t13>=2])<2 and len(t23[t23>=2])<2:
                 res = {}
@@ -92,7 +93,14 @@ for i in range(0,len(df.index)):
             else:
                 continue
 res_df = res_df.sort_values(by=['总分','总伤'],ascending=False)
+res_df['dr'] = res_df['刀1'] +'!!'+ res_df['刀2'] +'!!'+ res_df['刀3']
+res_df['dr'] = res_df['dr'].str.split('!!')
+res_df['dr'] = res_df['dr'].map(lambda x:sorted(x))
+res_df['dr'] = res_df['dr'].astype(str)
+res_df = res_df.drop_duplicates(subset='dr')
 
+
+#1
 
 #import pandas as pd
 #test = pd.read_excel('./角色匹配表.xlsx')
