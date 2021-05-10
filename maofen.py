@@ -34,9 +34,9 @@ score_rank = {'A1':1,'A2':1,'A3':1.1,'A4':1.1,'A5':1.2,
 #player_pool = res_char_player['char'].unique().tolist()  
 
 df_player = pd.read_excel('box.xlsx')
-player_pool = df_player['temp'].dropna().astype(str).values.tolist()
+player_pool = df_player['wkb'].dropna().astype(str).values.tolist()
 #df = pd.read_excel('rk.xlsx')
-df = pd.read_excel('homework.xlsx',sheet_name='C')
+df = pd.read_excel('homework.xlsx',sheet_name='Sheet3')
 test = pd.read_excel('./name_mapping.xlsx')
 
 def scan_team(str1):
@@ -58,6 +58,7 @@ if 'team' in df.columns:
     df = pd.concat([df,df2],axis=1)
 
 df['score_rank'] = df['boss'].replace(score_rank)
+df['dmg'] = df['dmg'].astype(int)
 df['score'] = df['dmg']*df['score_rank']
 df['p1'] = df['p1'].astype(str)
 df['p2'] = df['p2'].astype(str)
