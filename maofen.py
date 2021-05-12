@@ -36,7 +36,7 @@ score_rank = {'A1':1,'A2':1,'A3':1.1,'A4':1.1,'A5':1.2,
 df_player = pd.read_excel('box.xlsx')
 player_pool = df_player['wkb'].dropna().astype(str).values.tolist()
 #df = pd.read_excel('rk.xlsx')
-df = pd.read_excel('homework.xlsx',sheet_name='Sheet3')
+df = pd.read_excel('homework.xlsx',sheet_name='3c')
 test = pd.read_excel('./name_mapping.xlsx')
 
 def scan_team(str1):
@@ -75,11 +75,15 @@ for i in range(0,len(df.index)):
             t12 = pd.Series(np.concatenate([team1,team2])).value_counts()
             t13 = pd.Series(np.concatenate([team1,team3])).value_counts()
             t23 = pd.Series(np.concatenate([team2,team3])).value_counts()
+            t123 = pd.Series(np.concatenate([team1,team2,team3])).value_counts()
 #            need_character = t12[t12>=2].index.tolist()+t13[t13>=2].index.tolist()+t23[t23>=2].index.tolist()
             need_character = set(t12.index.tolist()+t13.index.tolist()+t23.index.tolist())
             if [x for x in need_character if x not in player_pool]:
+                print([x for x in need_character if x not in player_pool])
                 continue
-            elif len(t12[t12>=2])<2 and len(t13[t13>=2])<2 and len(t23[t23>=2])<2:
+#                break
+            elif (len(t12[t12>=2])<2 and len(t13[t13>=2])<2 and len(t23[t23>=2])<2) or (len(t123[t123>=3])==1 and len(t123[t123==2])<=1):
+#            elif (len(t12[t12>=2])<2 and len(t13[t13>=2])<2 and len(t23[t23>=2])<2) or (len(t123[t123>=3])==1 and len(t123[t123==2])<=1):
                 res = {}
                 res['刀1'] = df.loc[i,'boss'] +':'+','.join(team1.tolist())+':'+str(df.loc[i,'dmg'])
                 res['刀2'] = df.loc[j,'boss'] +':'+','.join(team2.tolist())+':'+str(df.loc[j,'dmg'])
